@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistencia de Cata</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Faltas de Cata</h1>
+        
+        <div class="input-group">
+            <input type="date" id="fechaInput">
+            <button id="btnAnotar">Anotar</button>
+        </div>
+
+        <div class="stats">
+            Días ausente: <span id="totalFaltas">0</span>
+        </div>
+
+        <ul id="listaFaltas">
+            </ul>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
