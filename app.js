@@ -15,16 +15,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const faltasRef = collection(db, "faltas");
 
-// ==========================================
-// CONFIGURACIÓN DE NOTIFICACIONES SUTILES
-// ==========================================
 const Toast = Swal.mixin({
     toast: true,
-    position: 'top-end', // Aparece arriba a la derecha
+    position: 'top-end', 
     showConfirmButton: false,
-    timer: 2500, // Desaparece en 2.5 segundos
+    timer: 2000, 
     timerProgressBar: true,
-    background: 'var(--card)', // Respeta el modo oscuro
+    background: 'var(--card)',
     color: 'var(--text)',
     customClass: {
         popup: 'swal2-toast-custom'
@@ -34,9 +31,10 @@ const Toast = Swal.mixin({
 let fechasGuardadas = [];
 
 const fechaInput = document.getElementById("fechaInput");
-
 if (fechaInput) {
-    fechaInput.valueAsDate = new Date();
+    const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' });
+    fechaInput.value = hoy;
+    fechaInput.setAttribute("max", hoy); 
 }
 
 const q = query(faltasRef, orderBy("fecha", "desc"));
@@ -111,9 +109,7 @@ onSnapshot(q, (snapshot) => {
 const btnAnotar = document.getElementById("btnAnotar");
 
 if (btnAnotar) {
-
     btnAnotar.addEventListener("click", async () => {
-
         const nuevaFecha = fechaInput.value;
 
         if (!nuevaFecha) {
@@ -124,11 +120,13 @@ if (btnAnotar) {
             return;
         }
 
-        const hoy = new Date().toISOString().split('T')[0];
+        const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' });
+
         if (nuevaFecha > hoy) {
             Toast.fire({
                 icon: 'error',
-                title: 'Fecha no permitida, es superior a la actual'
+                title: 'Fecha no permitida',
+                text: 'No podés seleccionar una fecha superior a la de hoy'
             });
             return;
         }
@@ -141,6 +139,7 @@ if (btnAnotar) {
             return;
         }
 
+        // 5. Guardar
         try {
             await addDoc(faltasRef, {
                 fecha: nuevaFecha
@@ -158,9 +157,7 @@ if (btnAnotar) {
                 title: 'Error de conexión'
             });
         }
-
     });
-
 }
 
 const themeToggle = document.getElementById("themeToggle");
