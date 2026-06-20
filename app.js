@@ -60,6 +60,10 @@ onSnapshot(q, (snapshot) => {
 
 function renderizarLista() {
     const lista = document.getElementById("listaFaltas");
+    const skeletonList = document.getElementById("skeletonList");
+
+    if (skeletonList) skeletonList.style.display = "none";
+
     if (!lista) return;
 
     lista.innerHTML = "";
@@ -77,19 +81,14 @@ function renderizarLista() {
         if (coincideMes && coincideAnio) {
             contador++;
             const li = document.createElement("li");
-            
             li.innerHTML = `
                 <div class="falta-info">
                     <span><i class="fa-solid fa-calendar-day"></i> ${day}/${month}/${year}</span>
                     ${falta.motivo ? `<span class="falta-motivo">${falta.motivo}</span>` : ""}
                 </div>
                 <div class="acciones">
-                    <button class="btn-editar" data-id="${falta.id}" data-motivo="${falta.motivo}">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="btn-borrar" data-id="${falta.id}">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
+                    <button class="btn-editar" data-id="${falta.id}" data-motivo="${falta.motivo}"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-borrar" data-id="${falta.id}"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
             `;
             lista.appendChild(li);
@@ -97,14 +96,7 @@ function renderizarLista() {
     });
 
     document.getElementById("totalFaltas").textContent = contador;
-
-    if (emptyState) {
-        if (contador === 0) {
-            emptyState.classList.remove("hidden");
-        } else {
-            emptyState.classList.add("hidden");
-        }
-    }
+    if (emptyState) emptyState.classList.toggle("hidden", contador > 0);
 
     asignarEventosBorrar();
     asignarEventosEditar();
@@ -208,8 +200,8 @@ if (btnExportar) {
         });
 
         if (datosParaPDF.length === 0) {
-             Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
-             return;
+            Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
+            return;
         }
 
         const { jsPDF } = window.jspdf;
@@ -253,10 +245,12 @@ if (btnExportar) {
                 1: { cellWidth: 'auto' } 
             }
         });
-
-        doc.save(`Reporte_Faltas_Cata_${new Date().getTime()}.pdf`);
+        const loadingBar = document.getElementById("loadingBar");
+        if(loadingBar) loadingBar.classList.add("active");
+        doc.save(`ReporteFaltasCata_${new Date().getTime()}.pdf`);
         
         Toast.fire({ icon: 'success', title: 'PDF generado con éxito' });
+        if(loadingBar) loadingBar.classList.remove("active");
     });
 }
 
@@ -293,6 +287,9 @@ if (btnAnotar) {
             return;
         }
 
+        const loadingBar = document.getElementById("loadingBar");
+        if(loadingBar) loadingBar.classList.add("active");
+
         try {
             await addDoc(faltasRef, {
                 fecha: nuevaFecha,
@@ -312,6 +309,8 @@ if (btnAnotar) {
                 icon: 'error',
                 title: 'Error de conexión'
             });
+        } finally {
+            if(loadingBar) loadingBar.classList.remove("active");
         }
     });
 }

@@ -74,6 +74,12 @@
 
             <ul id="listaFaltas" class="faltas-list"></ul>
 
+            <ul id="skeletonList" class="faltas-list">
+                <li class="skeleton"><div class="skeleton-text"></div><div class="skeleton-btn"></div></li>
+                <li class="skeleton"><div class="skeleton-text"></div><div class="skeleton-btn"></div></li>
+                <li class="skeleton"><div class="skeleton-text"></div><div class="skeleton-btn"></div></li>
+            </ul>
+
             <div id="emptyState" class="empty-state hidden">
                 <i class="fa-solid fa-calendar-check"></i>
                 <p>No hay faltas registradas en este período.</p>
@@ -91,4 +97,5 @@
     
     <script type="module" src="app.js"></script>
 </body>
+<div id="loadingBar" class="loading-bar hidden"></div>
 </html>
