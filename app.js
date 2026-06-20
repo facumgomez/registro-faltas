@@ -28,16 +28,16 @@ const Toast = Swal.mixin({
     }
 });
 
-let todasLasFaltas = []; // Guarda todo lo que viene de Firebase
-let fechasGuardadas = []; // Se usa para validar duplicados
+let todasLasFaltas = []; 
+let fechasGuardadas = []; 
 
 const fechaInput = document.getElementById("fechaInput");
+const motivoInput = document.getElementById("motivoInput");
 const filtroMes = document.getElementById("filtroMes");
 const filtroAnio = document.getElementById("filtroAnio");
 const btnExportar = document.getElementById("btnExportar");
 const emptyState = document.getElementById("emptyState");
 
-// INICIALIZAR FECHA
 if (fechaInput) {
     const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' });
     fechaInput.value = hoy;
@@ -51,7 +51,7 @@ onSnapshot(q, (snapshot) => {
 
     snapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        todasLasFaltas.push({ id: docSnap.id, fecha: data.fecha });
+        todasLasFaltas.push({ id: docSnap.id, fecha: data.fecha, motivo: data.motivo || "" });
         fechasGuardadas.push(data.fecha);
     });
 
@@ -77,8 +77,12 @@ function renderizarLista() {
         if (coincideMes && coincideAnio) {
             contador++;
             const li = document.createElement("li");
+
             li.innerHTML = `
-                <span>📅 ${day}/${month}/${year}</span>
+                <div class="falta-info">
+                    <span>📅 ${day}/${month}/${year}</span>
+                    ${falta.motivo ? `<span class="falta-motivo">💬 ${falta.motivo}</span>` : ""}
+                </div>
                 <button class="btn-borrar" data-id="${falta.id}">
                     X
                 </button>
@@ -100,6 +104,7 @@ function renderizarLista() {
     asignarEventosBorrar();
 }
 
+// LÓGICA DE BORRAR
 function asignarEventosBorrar() {
     document.querySelectorAll(".btn-borrar").forEach(btn => {
         btn.addEventListener("click", (e) => {
@@ -137,10 +142,9 @@ if (btnExportar) {
             return;
         }
 
-        let csv = "Fecha\n";
         const mesSel = filtroMes.value;
         const anioSel = filtroAnio.value;
-        let hayDatosFiltrados = false;
+        const datosParaPDF = [];
 
         todasLasFaltas.forEach(f => {
             const [y, m, d] = f.fecha.split("-");
@@ -148,34 +152,70 @@ if (btnExportar) {
             const coincideAnio = anioSel === "todos" || anioSel === y;
 
             if (coincideMes && coincideAnio) {
-                csv += `${d}/${m}/${y}\n`;
-                hayDatosFiltrados = true;
+                const fechaFormateada = `${d}/${m}/${y}`;
+                const motivo = f.motivo ? f.motivo : "-"; 
+                datosParaPDF.push([fechaFormateada, motivo]);
             }
         });
 
-        if (!hayDatosFiltrados) {
-             Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
-             return;
+        if (datosParaPDF.length === 0) {
+            Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
+            return;
         }
 
-        // Crear y descargar archivo
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", `faltas_cata_${new Date().getFullYear()}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.setTextColor(17, 24, 39); 
+        doc.text("Reporte de Asistencia - Cata", 14, 22);
+        
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100, 116, 139); 
+        doc.text("Técnica en Acompañamiento Terapéutico: Nadia Luján Sosa", 14, 32);
+        
+        const fechaEmision = new Date().toLocaleDateString('es-AR');
+        doc.text(`Fecha de emisión del reporte: ${fechaEmision}`, 14, 38);
+
+        if (mesSel !== "todos") {
+            const nombreMes = filtroMes.options[filtroMes.selectedIndex].text;
+            doc.text(`Período filtrado: ${nombreMes} ${anioSel !== "todos" ? anioSel : ""}`, 14, 44);
+        }
+
+        doc.autoTable({
+            startY: 52, 
+            head: [['Fecha de Ausencia', 'Motivo / Justificación']],
+            body: datosParaPDF,
+            theme: 'striped', 
+            headStyles: { 
+                fillColor: [139, 92, 246], 
+                textColor: [255, 255, 255],
+                fontStyle: 'bold'
+            },
+            styles: { 
+                font: 'helvetica',
+                fontSize: 10, 
+                cellPadding: 6 
+            },
+            columnStyles: {
+                0: { cellWidth: 40 }, 
+                1: { cellWidth: 'auto' } 
+            }
+        });
+        doc.save(`Reporte_Faltas_Cata_${new Date().getTime()}.pdf`);
+        
+        Toast.fire({ icon: 'success', title: 'PDF generado con éxito' });
     });
 }
 
-// BOTÓN ANOTAR
 const btnAnotar = document.getElementById("btnAnotar");
 if (btnAnotar) {
     btnAnotar.addEventListener("click", async () => {
         const nuevaFecha = fechaInput.value;
+        const nuevoMotivo = motivoInput ? motivoInput.value.trim() : "";
 
         if (!nuevaFecha) {
             Toast.fire({
@@ -206,13 +246,16 @@ if (btnAnotar) {
 
         try {
             await addDoc(faltasRef, {
-                fecha: nuevaFecha
+                fecha: nuevaFecha,
+                motivo: nuevoMotivo
             });
 
             Toast.fire({
                 icon: 'success',
                 title: 'Anotado correctamente'
             });
+
+            if (motivoInput) motivoInput.value = "";
 
         } catch (error) {
             console.error(error);

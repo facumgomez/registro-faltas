@@ -129,56 +129,45 @@ h1{
 
 .input-group{
     display:flex;
+    flex-direction:column;
     gap:12px;
     margin-bottom:20px;
 }
 
-input[type="date"]{
-    flex:1;
-
+input[type="date"], input[type="text"]{
+    width:100%;
     padding:14px;
-
     border-radius:12px;
-
     border:1px solid var(--border);
-
     background:var(--input);
-
     color:var(--text);
-
     font-size:1rem;
+    transition: border-color 0.2s;
 }
 
-input[type="date"]:focus{
+input[type="date"]:focus, input[type="text"]:focus{
     outline:none;
     border-color:var(--accent);
 }
 
 #btnAnotar{
-    min-width:110px;
-
+    width:100%;
+    padding:14px;
     border:none;
-
     border-radius:12px;
-
     background:linear-gradient(
         135deg,
         var(--accent),
         var(--accent2)
     );
-
     color:white;
-
     font-weight:700;
-
     cursor:pointer;
-
     transition:.25s;
 }
 
 #btnAnotar:hover{
     transform:translateY(-2px);
-
     box-shadow:0 10px 20px rgba(139,92,246,.25);
 }
 
@@ -272,17 +261,11 @@ li{
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     background:var(--input);
-
     border:1px solid var(--border);
-
     border-radius:12px;
-
     padding:15px;
-
     margin-bottom:12px;
-
     transition:.2s;
 }
 
@@ -290,19 +273,26 @@ li:hover{
     transform:translateX(4px);
 }
 
+.falta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.falta-motivo {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    padding-left: 24px;
+    font-weight: 500;
+}
+
 .btn-borrar{
     background:transparent;
-
     color:var(--danger);
-
     border:1px solid var(--danger);
-
     border-radius:8px;
-
     padding:6px 12px;
-
     cursor:pointer;
-
     transition:.2s;
 }
 
@@ -326,8 +316,6 @@ li:hover{
 .hidden {
     display: none !important;
 }
-
-/* ========================================== */
 
 body.dark .swal2-popup {
     background-color: var(--card);
@@ -361,11 +349,27 @@ body.dark .swal2-html-container {
 .nombre-profesional {
     font-size: 1.1rem;
     font-weight: 800;
-
     background: linear-gradient(90deg, var(--accent), var(--accent2));
     -webkit-background-clip: text;
     background-clip: text; 
     -webkit-text-fill-color: transparent;
+}
+
+@media (min-width: 480px) {
+    .input-group {
+        flex-direction: row;
+        align-items: center;
+    }
+    input[type="date"] {
+        flex: 1;
+    }
+    input[type="text"] {
+        flex: 1.5;
+    }
+    #btnAnotar {
+        width: auto;
+        min-width: 110px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -388,13 +392,7 @@ body.dark .swal2-html-container {
 }
 
 @media (max-width: 320px) {
-    .input-group,
     .filtros-group {
         flex-direction: column;
-    }
-
-    #btnAnotar {
-        width: 100%;
-        padding: 14px;
     }
 }

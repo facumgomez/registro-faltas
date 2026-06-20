@@ -27,6 +27,7 @@
 
         <div class="input-group">
             <input type="date" id="fechaInput">
+            <input type="text" id="motivoInput" placeholder="Motivo (opcional)">
             <button id="btnAnotar">Anotar</button>
         </div>
 
@@ -57,9 +58,10 @@
             </div>
             
             <button id="btnExportar" class="btn-exportar">
-                <i class="fa-solid fa-file-excel"></i> Exportar
+                <i class="fa-solid fa-file-pdf"></i> Exportar Reporte PDF
             </button>
         </div>
+
         <div class="stats">
             Días ausente: <span id="totalFaltas">0</span>
         </div>
@@ -77,6 +79,9 @@
         </div>
 
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <script type="module" src="app.js"></script>
 </body>
