@@ -182,6 +182,66 @@ input[type="date"]:focus{
     box-shadow:0 10px 20px rgba(139,92,246,.25);
 }
 
+.filtros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed var(--border);
+}
+
+.filtros-group {
+    display: flex;
+    gap: 12px;
+}
+
+select {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--input);
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+    outline: none;
+    transition: .2s;
+    color-scheme: light;
+}
+
+body.dark select {
+    color-scheme: dark;
+}
+
+select:focus {
+    border-color: var(--accent);
+}
+
+.btn-exportar {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--accent2);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--accent2);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: .25s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-exportar:hover {
+    background: var(--accent2);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(6, 182, 212, 0.2);
+}
+
 .stats {
     background: var(--input);
     border: 1px solid var(--border);
@@ -190,11 +250,10 @@ input[type="date"]:focus{
     margin-bottom: 20px;
     color: var(--text);
     
-    /* Usamos flex para que el texto y el número gigante queden centrados y alineados */
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px; /* Espacio entre las letras y el número */
+    gap: 8px;
     font-size: 1.1rem;
 }
 
@@ -252,6 +311,24 @@ li:hover{
     color:white;
 }
 
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 30px 10px;
+}
+
+.empty-state p {
+    font-weight: 500;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ========================================== */
+
 body.dark .swal2-popup {
     background-color: var(--card);
     color: var(--text);
@@ -277,7 +354,7 @@ body.dark .swal2-html-container {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: var(--text);
-    opacity: 0.6; /* Lo hace ver más sutil y elegante */
+    opacity: 0.6; 
     font-weight: 600;
 }
 
@@ -311,7 +388,8 @@ body.dark .swal2-html-container {
 }
 
 @media (max-width: 320px) {
-    .input-group {
+    .input-group,
+    .filtros-group {
         flex-direction: column;
     }
 

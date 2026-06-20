@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#8b5cf6">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
@@ -29,11 +30,46 @@
             <button id="btnAnotar">Anotar</button>
         </div>
 
+        <div class="filtros-container">
+            <div class="filtros-group">
+                <select id="filtroMes">
+                    <option value="todos">Todos los meses</option>
+                    <option value="01">Enero</option>
+                    <option value="02">Febrero</option>
+                    <option value="03">Marzo</option>
+                    <option value="04">Abril</option>
+                    <option value="05">Mayo</option>
+                    <option value="06">Junio</option>
+                    <option value="07">Julio</option>
+                    <option value="08">Agosto</option>
+                    <option value="09">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+                
+                <select id="filtroAnio">
+                    <option value="todos">Todos los años</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                </select>
+            </div>
+            
+            <button id="btnExportar" class="btn-exportar">
+                <i class="fa-solid fa-file-excel"></i> Exportar
+            </button>
+        </div>
         <div class="stats">
             Días ausente: <span id="totalFaltas">0</span>
         </div>
 
         <ul id="listaFaltas"></ul>
+
+        <div id="emptyState" class="empty-state hidden" style="text-align: center; margin-top: 20px; color: #64748b;">
+            <i class="fa-solid fa-calendar-check" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+            <p>No hay faltas en este período</p>
+        </div>
 
         <div class="footer-credencial">
             <span class="titulo-profesional">Técnica en Acompañamiento Terapéutico</span>
