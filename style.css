@@ -359,15 +359,32 @@ body.dark .faltas-list li:hover {
     padding-left: 24px;
 }
 
-.btn-borrar {
+/* NUEVO: CONTENEDOR DE ACCIONES Y BOTÓN EDITAR */
+.acciones {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-editar, .btn-borrar {
     background: transparent;
-    color: var(--text-sub);
-    border: none;
     font-size: 1.1rem;
     cursor: pointer;
     padding: 8px;
     border-radius: 8px;
     transition: 0.2s;
+    border: none;
+}
+
+.btn-editar {
+    color: var(--accent);
+}
+
+.btn-editar:hover {
+    background: rgba(139, 92, 246, 0.15);
+}
+
+.btn-borrar {
+    color: var(--text-sub);
 }
 
 .btn-borrar:hover {
@@ -415,6 +432,46 @@ body.dark .faltas-list li:hover {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.swal2-popup {
+    border-radius: 24px !important;
+    background: var(--card-bg) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border: 1px solid var(--card-border) !important;
+    color: var(--text-main) !important;
+    /* Aseguramos un acolchado interno para todo el contenido */
+    padding: 1.5rem !important; 
+}
+
+.swal2-title, .swal2-html-container {
+    color: var(--text-main) !important;
+}
+
+.swal2-input {
+    width: 100% !important; 
+    box-sizing: border-box !important; 
+    margin: 1rem 0 !important; 
+    
+    border-radius: 12px !important;
+    border: 1px solid var(--card-border) !important;
+    background: var(--input-bg) !important;
+    color: var(--text-main) !important;
+    box-shadow: none !important; 
+    transition: 0.3s ease !important;
+}
+
+.swal2-input:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+    outline: none !important;
+}
+
+.swal2-confirm, .swal2-cancel {
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    padding: 12px 24px !important;
 }
 
 @media (max-width: 480px) {

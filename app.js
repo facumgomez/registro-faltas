@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDg_0WcubPwsjw1hbFFze4otLWW6l8fAE4",
@@ -21,8 +21,8 @@ const Toast = Swal.mixin({
     showConfirmButton: false,
     timer: 2000, 
     timerProgressBar: true,
-    background: 'var(--card)',
-    color: 'var(--text)',
+    background: 'var(--card-bg)',
+    color: 'var(--text-main)',
     customClass: {
         popup: 'swal2-toast-custom'
     }
@@ -77,15 +77,20 @@ function renderizarLista() {
         if (coincideMes && coincideAnio) {
             contador++;
             const li = document.createElement("li");
-
+            
             li.innerHTML = `
                 <div class="falta-info">
-                    <span>📅 ${day}/${month}/${year}</span>
-                    ${falta.motivo ? `<span class="falta-motivo">💬 ${falta.motivo}</span>` : ""}
+                    <span><i class="fa-solid fa-calendar-day"></i> ${day}/${month}/${year}</span>
+                    ${falta.motivo ? `<span class="falta-motivo">${falta.motivo}</span>` : ""}
                 </div>
-                <button class="btn-borrar" data-id="${falta.id}">
-                    X
-                </button>
+                <div class="acciones">
+                    <button class="btn-editar" data-id="${falta.id}" data-motivo="${falta.motivo}">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="btn-borrar" data-id="${falta.id}">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
             `;
             lista.appendChild(li);
         }
@@ -102,13 +107,13 @@ function renderizarLista() {
     }
 
     asignarEventosBorrar();
+    asignarEventosEditar();
 }
 
-// LÓGICA DE BORRAR
 function asignarEventosBorrar() {
     document.querySelectorAll(".btn-borrar").forEach(btn => {
         btn.addEventListener("click", (e) => {
-            const docId = e.currentTarget.getAttribute("data-id");
+            const docId = e.currentTarget.closest('.btn-borrar').getAttribute("data-id");
 
             Swal.fire({
                 title: '¿Borrar esta falta?',
@@ -126,6 +131,50 @@ function asignarEventosBorrar() {
                         icon: 'success',
                         title: 'Falta eliminada'
                     });
+                }
+            });
+        });
+    });
+}
+
+function asignarEventosEditar() {
+    document.querySelectorAll(".btn-editar").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const botonActual = e.currentTarget.closest('.btn-editar');
+            const docId = botonActual.getAttribute("data-id");
+            const motivoActual = botonActual.getAttribute("data-motivo");
+
+            Swal.fire({
+                title: 'Editar motivo',
+                input: 'text',
+                inputValue: motivoActual,
+                inputPlaceholder: 'Ej: Turno médico, Enfermedad...',
+                showCancelButton: true,
+                confirmButtonColor: '#8b5cf6', 
+                cancelButtonColor: '#334155',
+                confirmButtonText: 'Guardar',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const nuevoMotivo = result.value.trim();
+                        const faltaRef = doc(db, "faltas", docId);
+                        
+                        await updateDoc(faltaRef, {
+                            motivo: nuevoMotivo
+                        });
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Motivo actualizado'
+                        });
+                    } catch (error) {
+                        console.error(error);
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Error al actualizar'
+                        });
+                    }
                 }
             });
         });
@@ -153,16 +202,15 @@ if (btnExportar) {
 
             if (coincideMes && coincideAnio) {
                 const fechaFormateada = `${d}/${m}/${y}`;
-                const motivo = f.motivo ? f.motivo : "-"; 
+                const motivo = f.motivo ? f.motivo : "-";
                 datosParaPDF.push([fechaFormateada, motivo]);
             }
         });
 
         if (datosParaPDF.length === 0) {
-            Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
-            return;
+             Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
+             return;
         }
-
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
@@ -189,9 +237,9 @@ if (btnExportar) {
             startY: 52, 
             head: [['Fecha de Ausencia', 'Motivo / Justificación']],
             body: datosParaPDF,
-            theme: 'striped', 
+            theme: 'striped',
             headStyles: { 
-                fillColor: [139, 92, 246], 
+                fillColor: [139, 92, 246],
                 textColor: [255, 255, 255],
                 fontStyle: 'bold'
             },
@@ -201,10 +249,11 @@ if (btnExportar) {
                 cellPadding: 6 
             },
             columnStyles: {
-                0: { cellWidth: 40 }, 
+                0: { cellWidth: 40 },
                 1: { cellWidth: 'auto' } 
             }
         });
+
         doc.save(`Reporte_Faltas_Cata_${new Date().getTime()}.pdf`);
         
         Toast.fire({ icon: 'success', title: 'PDF generado con éxito' });
