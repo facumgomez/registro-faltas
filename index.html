@@ -71,6 +71,9 @@
                 <span class="stat-label">Días ausente</span>
                 <span id="totalFaltas" class="stat-number">0</span>
             </div>
+            <button id="btnVerCalendario" class="btn-secundario">
+                <i class="fa-solid fa-calendar-days"></i> Ver Calendario
+            </button>
 
             <ul id="listaFaltas" class="faltas-list"></ul>
 
@@ -90,6 +93,26 @@
             <span class="titulo-profesional">Técnica en Acompañamiento Terapéutico</span>
             <span class="nombre-profesional">Nadia Luján Sosa</span>
         </footer>
+    </div>
+    <div id="calendarModal" class="modal hidden">
+        <div class="modal-content glass">
+            <span class="close-modal" id="closeCalendar">&times;</span>
+            <section class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prevMonth" class="btn-icon"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h4 id="calendarTitle">Mes</h4>
+                    <button id="nextMonth" class="btn-icon"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                <div class="day-name">Do</div>
+                <div class="day-name">Lu</div>
+                <div class="day-name">Ma</div>
+                <div class="day-name">Mi</div>
+                <div class="day-name">Ju</div>
+                <div class="day-name">Vi</div>
+                <div class="day-name">Sa</div>
+            </section>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

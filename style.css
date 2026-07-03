@@ -531,6 +531,207 @@ body.dark .faltas-list li:hover {
 
 .loading-bar.active { transform: scaleX(1); }
 
+.calendar-container {
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.calendar-header h4 {
+    font-size: 1.2rem;
+    color: var(--text-main);
+    text-transform: capitalize;
+    font-weight: 700;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-sub);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.btn-icon:hover {
+    background: rgba(139, 92, 246, 0.15);
+    color: var(--accent);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    text-align: center;
+}
+
+.day-name {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--text-sub);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 50%;
+    color: var(--text-main);
+    transition: 0.3s ease;
+}
+
+.calendar-day.empty {
+    background: transparent;
+}
+
+.calendar-day.falta {
+    background: linear-gradient(135deg, var(--danger), #fb7185);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    font-weight: 800;
+    transform: scale(1.05);
+}
+
+body.dark .calendar-day.falta {
+    background: linear-gradient(135deg, #ef4444, #9f1239);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.btn-secundario {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+    transition: 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn-secundario:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* ==========================================
+   MODAL / POPUP CALENDARIO
+   ========================================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px); /* Efecto vidrio empañado de fondo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Ocultar modal */
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 20px;
+    position: relative;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+}
+
+.modal.hidden .modal-content {
+    transform: translateY(30px);
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: 0.2s;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: var(--danger);
+}
+
+.calendar-day {
+    position: relative; 
+}
+
+.dia-tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-main);
+    color: var(--card-bg);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap; 
+    pointer-events: none; 
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+}
+
+.dia-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--text-main) transparent transparent transparent;
+}
+
+.calendar-day:hover .dia-tooltip,
+.calendar-day.show-tooltip .dia-tooltip {
+    opacity: 1;
+    visibility: visible;
+    bottom: 125%;
+}
+
 @media (max-width: 480px) {
     body { padding: 10px; }
     .container { padding: 20px; border-radius: 20px; margin-top: 20px;}

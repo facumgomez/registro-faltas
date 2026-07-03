@@ -304,6 +304,120 @@ if (btnAnotar) {
         }
     });
 }
+
+let calMes = new Date().getMonth(); 
+let calAnio = new Date().getFullYear();
+
+const btnPrevMonth = document.getElementById("prevMonth");
+const btnNextMonth = document.getElementById("nextMonth");
+
+if (btnPrevMonth) {
+    btnPrevMonth.addEventListener("click", () => {
+        calMes--;
+        if (calMes < 0) { calMes = 11; calAnio--; }
+        renderizarCalendario();
+    });
+}
+
+if (btnNextMonth) {
+    btnNextMonth.addEventListener("click", () => {
+        calMes++;
+        if (calMes > 11) { calMes = 0; calAnio++; }
+        renderizarCalendario();
+    });
+}
+
+function renderizarCalendario() {
+    const calendarGrid = document.getElementById("calendarGrid");
+    const calendarTitle = document.getElementById("calendarTitle");
+    if (!calendarGrid || !calendarTitle) return;
+
+    const mesesStr = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    calendarTitle.textContent = `${mesesStr[calMes]} ${calAnio}`;
+
+    const daysToKeep = calendarGrid.querySelectorAll(".day-name");
+    calendarGrid.innerHTML = "";
+    daysToKeep.forEach(day => calendarGrid.appendChild(day));
+
+    const primerDia = new Date(calAnio, calMes, 1).getDay(); 
+    const diasEnMes = new Date(calAnio, calMes + 1, 0).getDate(); 
+
+    for (let i = 0; i < primerDia; i++) {
+        const emptyDiv = document.createElement("div");
+        emptyDiv.classList.add("calendar-day", "empty");
+        calendarGrid.appendChild(emptyDiv);
+    }
+
+    for (let i = 1; i <= diasEnMes; i++) {
+        const dayDiv = document.createElement("div");
+        dayDiv.classList.add("calendar-day");
+        dayDiv.textContent = i;
+
+        const mesStr = (calMes + 1).toString().padStart(2, '0');
+        const diaStr = i.toString().padStart(2, '0');
+        const fechaCompleta = `${calAnio}-${mesStr}-${diaStr}`;
+
+        const faltaDelDia = todasLasFaltas.find(f => f.fecha === fechaCompleta);
+
+        if (faltaDelDia) {
+            dayDiv.classList.add("falta");
+            
+            if (faltaDelDia.motivo) {
+                dayDiv.style.cursor = "pointer";
+
+                const tooltip = document.createElement("span");
+                tooltip.classList.add("dia-tooltip");
+                tooltip.textContent = faltaDelDia.motivo;
+                dayDiv.appendChild(tooltip); 
+
+                dayDiv.addEventListener("click", (e) => {
+                    document.querySelectorAll('.calendar-day').forEach(d => {
+                        if (d !== dayDiv) d.classList.remove('show-tooltip');
+                    });
+
+                    dayDiv.classList.toggle("show-tooltip");
+                    e.stopPropagation(); 
+                });
+            }
+        }
+
+        calendarGrid.appendChild(dayDiv);
+    }
+}
+
+const btnVerCalendario = document.getElementById("btnVerCalendario");
+const calendarModal = document.getElementById("calendarModal");
+const closeCalendar = document.getElementById("closeCalendar");
+
+if (btnVerCalendario && calendarModal) {
+    btnVerCalendario.addEventListener("click", () => {
+        calendarModal.classList.remove("hidden");
+        // Reiniciamos al mes actual al abrir por comodidad
+        calMes = new Date().getMonth();
+        calAnio = new Date().getFullYear();
+        renderizarCalendario();
+    });
+}
+
+if (closeCalendar) {
+    closeCalendar.addEventListener("click", () => {
+        calendarModal.classList.add("hidden");
+    });
+}
+
+window.addEventListener("click", (e) => {
+
+    if (e.target === calendarModal) {
+        calendarModal.classList.add("hidden");
+    }
+
+    document.querySelectorAll('.calendar-day.show-tooltip').forEach(d => {
+        if (!d.contains(e.target)) {
+            d.classList.remove('show-tooltip');
+        }
+    });
+});
+
 const themeToggle = document.getElementById("themeToggle");
 const themeIcon = document.getElementById("themeIcon");
 
