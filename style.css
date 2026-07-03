@@ -653,7 +653,6 @@ body.dark .calendar-day.falta {
     transition: opacity 0.3s ease;
 }
 
-/* Ocultar modal */
 .modal.hidden {
     opacity: 0;
     pointer-events: none;
@@ -730,6 +729,140 @@ body.dark .calendar-day.falta {
     opacity: 1;
     visibility: visible;
     bottom: 125%;
+}
+.month-separator {
+    display: flex;
+    align-items: center;
+    margin: 18px 0 8px 0;
+    list-style: none;
+}
+
+.month-separator span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-sub);
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.month-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--text-sub);
+    opacity: 0.1;
+    margin-left: 10px;
+}
+
+.filtros-minimalistas {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filtros-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-sub);
+    text-transform: uppercase;
+    margin-left: 5px;
+    opacity: 0.8;
+}
+
+.filters-container.filtros-fila {
+    padding: 12px; 
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+    border-radius: 12px;
+}
+
+.filters-group {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.control-mini {
+    background: transparent;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    outline: none;
+    flex: 1; 
+    transition: border-color 0.2s;
+}
+
+body.dark .control-mini {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.control-mini:focus-within, 
+.control-mini:focus {
+    border-color: var(--accent);
+}
+
+.busqueda-unificada {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 8px;
+    padding: 4px 12px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    transition: border-color 0.3s ease;
+}
+
+body.dark .busqueda-unificada {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.busqueda-unificada:focus-within {
+    border-color: var(--accent);
+}
+
+.busqueda-unificada input {
+    flex: 1; 
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    outline: none;
+    padding: 4px 0;
+}
+
+.busqueda-unificada input::placeholder {
+    color: var(--text-sub);
+    opacity: 0.6;
+}
+
+.btn-lupa {
+    background: transparent;
+    border: none;
+    color: var(--text-sub);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 6px;
+    transition: 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-lupa:hover {
+    color: var(--accent);
+    transform: scale(1.1);
+}
+
+#btnExportar {
+    margin-top: 2px;
+    padding: 8px;
+    font-size: 0.85rem;
 }
 
 @media (max-width: 480px) {

@@ -43,10 +43,11 @@
                     </button>
                 </div>
             </section>
-
-            <section class="filters-container glass">
-                <div class="filters-group">
-                    <select id="filtroMes">
+            <div class="filtros-minimalistas">
+                <section class="filters-container glass filtros-fila">
+                    <span class="filtros-label">Filtros:</span>
+                    <div class="filters-group">
+                    <select id="filtroMes" class="control-mini">
                         <option value="todos">Todos los meses</option>
                         <option value="01">Enero</option><option value="02">Febrero</option>
                         <option value="03">Marzo</option><option value="04">Abril</option>
@@ -55,19 +56,28 @@
                         <option value="09">Septiembre</option><option value="10">Octubre</option>
                         <option value="11">Noviembre</option><option value="12">Diciembre</option>
                     </select>
-                    <select id="filtroAnio">
+                    <select id="filtroAnio" class="control-mini">
                         <option value="todos">Todos los años</option>
                         <option value="2024">2024</option>
                         <option value="2025">2025</option>
                         <option value="2026">2026</option>
                     </select>
-                </div>
-                <button id="btnExportar" class="btn-secondary">
-                    <i class="fa-solid fa-file-pdf"></i> Exportar Reporte PDF
-                </button>
-            </section>
+                    </div>
+                    <div class="busqueda-unificada">
+                        <input type="text" id="busquedaMotivo" placeholder="Buscar por motivo...">
+                        <button id="btnBuscarLupa" class="btn-lupa" title="Buscar">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                    <button id="btnExportar" class="btn-secondary">
+                        <i class="fa-solid fa-file-pdf"></i> Exportar Reporte PDF
+                    </button>
+                </section>
+            </div>
 
             <div class="stats glass">
+                <span class="stat-label">Presentismo</span>
+                <h2 id="porcentajePresentismo" class="stat-number">100%</h2>
                 <span class="stat-label">Días ausente</span>
                 <span id="totalFaltas" class="stat-number">0</span>
             </div>
