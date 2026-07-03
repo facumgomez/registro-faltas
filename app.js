@@ -183,74 +183,79 @@ if (btnExportar) {
             return;
         }
 
-        const mesSel = filtroMes.value;
-        const anioSel = filtroAnio.value;
-        const datosParaPDF = [];
-
-        todasLasFaltas.forEach(f => {
-            const [y, m, d] = f.fecha.split("-");
-            const coincideMes = mesSel === "todos" || mesSel === m;
-            const coincideAnio = anioSel === "todos" || anioSel === y;
-
-            if (coincideMes && coincideAnio) {
-                const fechaFormateada = `${d}/${m}/${y}`;
-                const motivo = f.motivo ? f.motivo : "-";
-                datosParaPDF.push([fechaFormateada, motivo]);
-            }
-        });
-
-        if (datosParaPDF.length === 0) {
-            Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
-            return;
-        }
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(18);
-        doc.setTextColor(17, 24, 39); 
-        doc.text("Reporte de Asistencia - Cata", 14, 22);
-        
-        doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(100, 116, 139); 
-        doc.text("Técnica en Acompañamiento Terapéutico: Nadia Luján Sosa", 14, 32);
-        
-        const fechaEmision = new Date().toLocaleDateString('es-AR');
-        doc.text(`Fecha de emisión del reporte: ${fechaEmision}`, 14, 38);
-
-        if (mesSel !== "todos") {
-            const nombreMes = filtroMes.options[filtroMes.selectedIndex].text;
-            doc.text(`Período filtrado: ${nombreMes} ${anioSel !== "todos" ? anioSel : ""}`, 14, 44);
-        }
-
-        doc.autoTable({
-            startY: 52, 
-            head: [['Fecha de Ausencia', 'Motivo / Justificación']],
-            body: datosParaPDF,
-            theme: 'striped',
-            headStyles: { 
-                fillColor: [139, 92, 246],
-                textColor: [255, 255, 255],
-                fontStyle: 'bold'
-            },
-            styles: { 
-                font: 'helvetica',
-                fontSize: 10, 
-                cellPadding: 6 
-            },
-            columnStyles: {
-                0: { cellWidth: 40 },
-                1: { cellWidth: 'auto' } 
-            }
-        });
         const loadingBar = document.getElementById("loadingBar");
-        if(loadingBar) loadingBar.classList.add("active");
-        doc.save(`ReporteFaltasCata_${new Date().getTime()}.pdf`);
-        
-        Toast.fire({ icon: 'success', title: 'PDF generado con éxito' });
-        if(loadingBar) loadingBar.classList.remove("active");
+        if (loadingBar) loadingBar.classList.add("active");
+
+        setTimeout(() => {
+            const mesSel = filtroMes.value;
+            const anioSel = filtroAnio.value;
+            const datosParaPDF = [];
+
+            todasLasFaltas.forEach(f => {
+                const [y, m, d] = f.fecha.split("-");
+                const coincideMes = mesSel === "todos" || mesSel === m;
+                const coincideAnio = anioSel === "todos" || anioSel === y;
+
+                if (coincideMes && coincideAnio) {
+                    const fechaFormateada = `${d}/${m}/${y}`;
+                    const motivo = f.motivo ? f.motivo : "-";
+                    datosParaPDF.push([fechaFormateada, motivo]);
+                }
+            });
+
+            if (datosParaPDF.length === 0) {
+                Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
+                if (loadingBar) loadingBar.classList.remove("active");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(17, 24, 39); 
+            doc.text("Reporte de Asistencia - Cata", 14, 22);
+            
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(100, 116, 139); 
+            doc.text("Técnica en Acompañamiento Terapéutico: Nadia Luján Sosa", 14, 32);
+            
+            const fechaEmision = new Date().toLocaleDateString('es-AR');
+            doc.text(`Fecha de emisión del reporte: ${fechaEmision}`, 14, 38);
+
+            if (mesSel !== "todos") {
+                const nombreMes = filtroMes.options[filtroMes.selectedIndex].text;
+                doc.text(`Período filtrado: ${nombreMes} ${anioSel !== "todos" ? anioSel : ""}`, 14, 44);
+            }
+
+            doc.autoTable({
+                startY: 52, 
+                head: [['Fecha de Ausencia', 'Motivo / Justificación']],
+                body: datosParaPDF,
+                theme: 'striped',
+                headStyles: { 
+                    fillColor: [139, 92, 246],
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold'
+                },
+                styles: { 
+                    font: 'helvetica',
+                    fontSize: 10, 
+                    cellPadding: 6 
+                },
+                columnStyles: {
+                    0: { cellWidth: 40 },
+                    1: { cellWidth: 'auto' } 
+                }
+            });
+
+            doc.save(`Reporte_Faltas_Cata_${new Date().getTime()}.pdf`);
+            Toast.fire({ icon: 'success', title: 'PDF generado con éxito' });
+            
+            if (loadingBar) loadingBar.classList.remove("active");
+        }, 100);
     });
 }
 
@@ -261,10 +266,7 @@ if (btnAnotar) {
         const nuevoMotivo = motivoInput ? motivoInput.value.trim() : "";
 
         if (!nuevaFecha) {
-            Toast.fire({
-                icon: 'info',
-                title: 'Seleccioná una fecha'
-            });
+            Toast.fire({ icon: 'info', title: 'Seleccioná una fecha' });
             return;
         }
 
@@ -280,41 +282,28 @@ if (btnAnotar) {
         }
 
         if (fechasGuardadas.includes(nuevaFecha)) {
-            Toast.fire({
-                icon: 'warning',
-                title: 'Esa fecha ya está anotada'
-            });
+            Toast.fire({ icon: 'warning', title: 'Esa fecha ya está anotada' });
             return;
         }
 
         const loadingBar = document.getElementById("loadingBar");
-        if(loadingBar) loadingBar.classList.add("active");
+        if (loadingBar) loadingBar.classList.add("active");
 
         try {
             await addDoc(faltasRef, {
                 fecha: nuevaFecha,
                 motivo: nuevoMotivo
             });
-
-            Toast.fire({
-                icon: 'success',
-                title: 'Anotado correctamente'
-            });
-
+            Toast.fire({ icon: 'success', title: 'Anotado correctamente' });
             if (motivoInput) motivoInput.value = "";
-
         } catch (error) {
             console.error(error);
-            Toast.fire({
-                icon: 'error',
-                title: 'Error de conexión'
-            });
+            Toast.fire({ icon: 'error', title: 'Error de conexión' });
         } finally {
-            if(loadingBar) loadingBar.classList.remove("active");
+            if (loadingBar) loadingBar.classList.remove("active");
         }
     });
 }
-
 const themeToggle = document.getElementById("themeToggle");
 const themeIcon = document.getElementById("themeIcon");
 
