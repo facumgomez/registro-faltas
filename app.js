@@ -36,8 +36,27 @@ const motivoInput = document.getElementById("motivoInput");
 const filtroMes = document.getElementById("filtroMes");
 const filtroAnio = document.getElementById("filtroAnio");
 const busquedaMotivo = document.getElementById("busquedaMotivo");
+const btnBuscarLupa = document.getElementById("btnBuscarLupa");
 const btnExportar = document.getElementById("btnExportar");
 const emptyState = document.getElementById("emptyState");
+
+let ordenDescendente = true;
+function esDiaLectivo(fechaString) {
+    const partes = fechaString.split('-');
+    const fecha = new Date(partes[0], partes[1] - 1, partes[2]);
+    
+    const inicioClases = new Date(2026, 2, 2); // 2 de Marzo
+    const finClases = new Date(2026, 11, 22);  // 22 de Diciembre
+    const recesoInicio = new Date(2026, 6, 20); // 20 de Julio
+    const recesoFin = new Date(2026, 6, 31);    // 31 de Julio
+
+    if (fecha < inicioClases || fecha > finClases) return false;
+    if (fecha >= recesoInicio && fecha <= recesoFin) return false;
+
+    const diaSemana = fecha.getDay();
+    if (diaSemana === 0 || diaSemana === 6) return false; 
+    return true;
+}
 
 if (fechaInput) {
     const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' });
@@ -62,33 +81,46 @@ onSnapshot(q, (snapshot) => {
 function renderizarLista() {
     const lista = document.getElementById("listaFaltas");
     const skeletonList = document.getElementById("skeletonList");
-    
-    if (skeletonList) {
-        skeletonList.style.display = "none";
-    }
-
+    if (skeletonList) skeletonList.style.display = "none";
     if (!lista) return;
-
+    
     lista.innerHTML = "";
-    let contador = 0;
-
+    
     const mesSel = filtroMes ? filtroMes.value : "todos";
     const anioSel = filtroAnio ? filtroAnio.value : "todos";
     const textoBusqueda = busquedaMotivo ? busquedaMotivo.value.toLowerCase().trim() : "";
 
+    const hoyObj = new Date();
+    const hoyString = `${hoyObj.getFullYear()}-${(hoyObj.getMonth() + 1).toString().padStart(2, '0')}-${hoyObj.getDate().toString().padStart(2, '0')}`;
+
+    let itemsParaMostrar = [...todasLasFaltas];
+    Object.keys(feriadosArgentina2026).forEach(fechaFeriado => {
+        if (fechaFeriado <= hoyString && esDiaLectivo(fechaFeriado)) {
+            itemsParaMostrar.push({
+                fecha: fechaFeriado,
+                motivo: `Feriado: ${feriadosArgentina2026[fechaFeriado]}`,
+                esFeriado: true,
+                id: `feriado-${fechaFeriado}` 
+            });
+        }
+    });
+    itemsParaMostrar.sort((a, b) => {
+        return ordenDescendente ? b.fecha.localeCompare(a.fecha) : a.fecha.localeCompare(b.fecha);
+    });
+
+    let contadorTotalFaltasYFeriados = 0;
     const mesesNombres = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    let ultimoMesAnio = ""; 
+    let ultimoMesAnio = "";
 
-    todasLasFaltas.forEach((falta) => {
-        const [year, month, day] = falta.fecha.split("-");
-
+    itemsParaMostrar.forEach((item) => {
+        const [year, month, day] = item.fecha.split("-");
+        
         const coincideMes = mesSel === "todos" || mesSel === month;
         const coincideAnio = anioSel === "todos" || anioSel === year;
-        const coincideBusqueda = !textoBusqueda || falta.motivo.toLowerCase().includes(textoBusqueda);
+        const coincideBusqueda = !textoBusqueda || (item.motivo && item.motivo.toLowerCase().includes(textoBusqueda));
 
         if (coincideMes && coincideAnio && coincideBusqueda) {
-            contador++;
-
+            contadorTotalFaltasYFeriados++;
             const mesAnioActual = `${mesesNombres[parseInt(month) - 1]} ${year}`;
             if (mesAnioActual !== ultimoMesAnio) {
                 const separator = document.createElement("li");
@@ -99,85 +131,94 @@ function renderizarLista() {
             }
 
             const li = document.createElement("li");
+            li.classList.add(item.esFeriado ? "item-feriado" : "item-falta");
+            
             li.innerHTML = `
                 <div class="falta-info">
-                    <span><i class="fa-solid fa-calendar-day"></i> ${day}/${month}/${year}</span>
-                    ${falta.motivo ? `<span class="falta-motivo">${falta.motivo}</span>` : ""}
+                    <span><i class="fa-solid ${item.esFeriado ? 'fa-calendar-check' : 'fa-calendar-day'}"></i> ${day}/${month}/${year}</span>
+                    <span class="falta-motivo">${item.motivo}</span>
                 </div>
+                ${!item.esFeriado ? `
                 <div class="acciones">
-                    <button class="btn-editar" data-id="${falta.id}" data-motivo="${falta.motivo}"><i class="fa-solid fa-pen"></i></button>
-                    <button class="btn-borrar" data-id="${falta.id}"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
+                    <button class="btn-editar" data-id="${item.id}" data-motivo="${item.motivo}"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-borrar" data-id="${item.id}"><i class="fa-solid fa-trash-can"></i></button>
+                </div>` : ''}
             `;
             lista.appendChild(li);
         }
     });
+    const txtTotalFaltas = document.getElementById("totalFaltas");
+    if (txtTotalFaltas) txtTotalFaltas.textContent = contadorTotalFaltasYFeriados;
+    
+    calcularPresentismo(mesSel, anioSel);
 
-    document.getElementById("totalFaltas").textContent = contador;
-    if (emptyState) emptyState.classList.toggle("hidden", contador > 0);
-
-    calcularPresentismo();
-
-    asignarEventosBorrar();
-    asignarEventosEditar();
+    if (typeof asignarEventosBorrar === "function") asignarEventosBorrar();
+    if (typeof asignarEventosEditar === "function") asignarEventosEditar();
     if (typeof renderizarCalendario === "function") renderizarCalendario();
 }
 
 ///ALGORITMO DE PRESENTISMO (FERIADOS ARGENTINA 2026)
-function calcularPresentismo() {
+    const feriadosArgentina2026 = {
+        "2026-01-01": "Año Nuevo",
+        "2026-02-16": "Carnaval",
+        "2026-02-16": "Carnaval",
+        "2026-03-23": "Día no laborable con fines turísticos.",
+        "2026-03-24": "Día Nacional de la Memoria por la Verdad y la Justicia",
+        "2026-04-02": "Día del Veterano y de los Caídos en la Guerra de Malvinas",
+        "2026-04-03": "Viernes Santo",
+        "2026-05-01": "Día del Trabajador",
+        "2026-05-25": "Revolución de Mayo",
+        "2026-06-15": "Paso a la Inmortalidad del Gral. Don Martín Miguel de Güemes",
+        "2026-06-20": "Día de la Bandera",
+        "2026-07-09": "Día de la Independencia",
+        "2026-07-10": "Día no laborable con fines turísticos.",
+        "2026-08-17": "Paso a la Inmortalidad del Gral. José de San Martín",
+        "2026-10-12": "Día de la Diversidad Cultural",
+        "2026-11-23": "Día de la Soberanía",
+        "2026-12-07": "Día no laborable con fines turísticos.",
+        "2026-12-08": "Inmaculada Concepción de María",
+        "2026-12-24": "Noche Buena",
+        "2026-12-24": "Navidad"
+};
+
+function calcularPresentismo(mesFiltro, anioFiltro) {
     const txtPresentismo = document.getElementById("porcentajePresentismo");
     if (!txtPresentismo) return;
 
-    const fechaInicioClases = new Date(2026, 2, 2); // 2 de Marzo de 2026
-    const fechaHoy = new Date();
-
-    if (fechaHoy < fechaInicioClases) {
-        txtPresentismo.textContent = "100%";
-        return;
-    }
-
-    const feriadosArgentina2026 = [
-        "2026-03-24", // Día de la Memoria
-        "2026-04-02", // Malvinas
-        "2026-04-03", // Viernes Santo
-        "2026-05-01", // Día del Trabajador
-        "2026-05-25", // Revolución de Mayo
-        "2026-06-15", // Gral. Güemes
-        "2026-07-09", // Día de la Independencia
-        "2026-07-10", // Feriado Puente Turístico
-        "2026-08-17", // Paso a la Inmortalidad del Gral. San Martín
-        "2026-10-12", // Día del Respeto a la Diversidad Cultural
-        "2026-11-23", // Día de la Soberanía Nacional
-        "2026-12-07", // Feriado Puente Turístico
-        "2026-12-08"  // Inmaculada Concepción
-    ];
-
     let diasHabilesLectivos = 0;
-    let iteradorFecha = new Date(fechaInicioClases);
+    
+    const fechaInicio = new Date(2026, 2, 2); 
+    const fechaFin = new Date(2026, 11, 22); 
+    const hoy = new Date();
+    const limiteCalculo = hoy < fechaFin ? hoy : fechaFin;
 
-    while (iteradorFecha <= fechaHoy) {
-        const diaSemana = iteradorFecha.getDay(); 
+    let iterador = new Date(fechaInicio);
+    
+    while (iterador <= limiteCalculo) {
+        const y = iterador.getFullYear().toString();
+        const m = (iterador.getMonth() + 1).toString().padStart(2, '0');
+        const d = iterador.getDate().toString().padStart(2, '0');
+        const fString = `${y}-${m}-${d}`;
 
-        if (diaSemana !== 0 && diaSemana !== 6) {
-            const mStr = (iteradorFecha.getMonth() + 1).toString().padStart(2, '0');
-            const dStr = iteradorFecha.getDate().toString().padStart(2, '0');
-            const fString = `${iteradorFecha.getFullYear()}-${mStr}-${dStr}`;
-
-            if (!feriadosArgentina2026.includes(fString)) {
-                diasHabilesLectivos++;
-            }
+        const cumpleFiltro = (mesFiltro === "todos" || mesFiltro === m) && 
+                            (anioFiltro === "todos" || anioFiltro === y);
+        if (cumpleFiltro && esDiaLectivo(fString) && !feriadosArgentina2026[fString]) {
+            diasHabilesLectivos++;
         }
-        iteradorFecha.setDate(iteradorFecha.getDate() + 1);
+        iterador.setDate(iterador.getDate() + 1);
     }
 
-    if (diasHabilesLectivos === 0) {
-        txtPresentismo.textContent = "100%";
-        return;
-    }
+    const faltasRealesAlumno = todasLasFaltas.filter(f => {
+        const [y, m] = f.fecha.split("-");
+        const cumpleFiltros = (mesFiltro === "todos" || mesFiltro === m) && 
+                                (anioFiltro === "todos" || anioFiltro === y);
 
-    const faltasDelAnioEscolar = todasLasFaltas.filter(f => f.fecha >= "2026-03-02").length;
+        return cumpleFiltros && f.fecha <= `${hoy.getFullYear()}-${(hoy.getMonth() + 1).toString().padStart(2, '0')}-${hoy.getDate().toString().padStart(2, '0')}`;
+    }).length;
 
-    const porcentaje = Math.max(0, Math.round(((diasHabilesLectivos - faltasDelAnioEscolar) / diasHabilesLectivos) * 100));
+    const porcentaje = diasHabilesLectivos === 0 ? 100 : 
+                       Math.max(0, Math.round(((diasHabilesLectivos - faltasRealesAlumno) / diasHabilesLectivos) * 100));
+    
     txtPresentismo.textContent = `${porcentaje}%`;
 }
 
@@ -250,21 +291,20 @@ function asignarEventosEditar() {
             });
         });
     });
+    if (filtroMes) filtroMes.addEventListener("change", renderizarLista);
+    if (filtroAnio) filtroAnio.addEventListener("change", renderizarLista);
 }
 
-if (filtroMes) filtroMes.addEventListener("change", renderizarLista);
-if (filtroAnio) filtroAnio.addEventListener("change", renderizarLista);
-if (busquedaMotivo) busquedaMotivo.addEventListener("input", renderizarLista);
-
-const btnBuscarLupa = document.getElementById("btnBuscarLupa");
-
-if (btnBuscarLupa) {
-    btnBuscarLupa.addEventListener("click", () => {
-        if (typeof renderizarLista === "function") {
+    if (busquedaMotivo) {
+        busquedaMotivo.addEventListener("input", () => { 
             renderizarLista();
-        }
-    });
-}
+        });
+    }
+    if (btnBuscarLupa) {
+        btnBuscarLupa.addEventListener("click", () => {
+        renderizarLista();
+        });
+    }
 
 if (btnExportar) {
     btnExportar.addEventListener("click", () => {
@@ -280,18 +320,58 @@ if (btnExportar) {
             const mesSel = filtroMes.value;
             const anioSel = filtroAnio.value;
             const datosParaPDF = [];
+            const busquedaInput = document.getElementById("busquedaMotivo");
+            const textoBusqueda = busquedaInput ? busquedaInput.value.toLowerCase().trim() : "";
+            let itemsParaPDF = [...todasLasFaltas];
+            const hoyObj = new Date();
+            const hoyString = `${hoyObj.getFullYear()}-${(hoyObj.getMonth() + 1).toString().padStart(2, '0')}-${hoyObj.getDate().toString().padStart(2, '0')}`;
 
-            todasLasFaltas.forEach(f => {
-                const [y, m, d] = f.fecha.split("-");
-                const coincideMes = mesSel === "todos" || mesSel === m;
-                const coincideAnio = anioSel === "todos" || anioSel === y;
-
-                if (coincideMes && coincideAnio) {
-                    const fechaFormateada = `${d}/${m}/${y}`;
-                    const motivo = f.motivo ? f.motivo : "-";
-                    datosParaPDF.push([fechaFormateada, motivo]);
+            Object.keys(feriadosArgentina2026).forEach(fechaFeriado => {
+                if (fechaFeriado <= hoyString && typeof esDiaLectivo === 'function' && esDiaLectivo(fechaFeriado)) {
+                    itemsParaPDF.push({
+                        fecha: fechaFeriado,
+                        motivo: `Feriado: ${feriadosArgentina2026[fechaFeriado]}`,
+                        esFeriado: true
+                    });
                 }
             });
+            itemsParaPDF.sort((a, b) => {
+        return ordenDescendente ? b.fecha.localeCompare(a.fecha) : a.fecha.localeCompare(b.fecha);
+    });
+
+    const mesesNombres = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    let ultimoMesAnioPDF = "";
+    itemsParaPDF.forEach(f => {
+        const [y, m, d] = f.fecha.split("-");
+        const coincideMes = mesSel === "todos" || mesSel === m;
+        const coincideAnio = anioSel === "todos" || anioSel === y;
+        const coincideBusqueda = !textoBusqueda || (f.motivo && f.motivo.toLowerCase().includes(textoBusqueda));
+
+        if (coincideMes && coincideAnio && coincideBusqueda) {
+            const mesAnioActual = `${mesesNombres[parseInt(m) - 1]} ${y}`;
+            if (mesAnioActual !== ultimoMesAnioPDF) {
+                datosParaPDF.push([
+                    {
+                        content: mesAnioActual.toUpperCase(),
+                        colSpan: 2,
+                        styles: { halign: 'center', fillColor: [248, 250, 252], textColor: [100, 116, 139], fontStyle: 'bold', fontSize: 9 }
+                    }
+                ]);
+                ultimoMesAnioPDF = mesAnioActual;
+            }
+
+            const fechaFormateada = `${d}/${m}/${y}`;
+            const motivo = f.motivo ? f.motivo : "-";
+            if (f.esFeriado) {
+                datosParaPDF.push([
+                    { content: fechaFormateada, styles: { textColor: [14, 165, 233] } },
+                    { content: motivo, styles: { textColor: [14, 165, 233], fontStyle: 'bold' } }
+                ]);
+            } else {
+                datosParaPDF.push([fechaFormateada, motivo]);
+            }
+        }
+    });
 
             if (datosParaPDF.length === 0) {
                 Toast.fire({ icon: 'info', title: 'El filtro actual está vacío' });
@@ -438,6 +518,7 @@ function renderizarCalendario() {
         calendarGrid.appendChild(emptyDiv);
     }
 
+    // Días reales del mes
     for (let i = 1; i <= diasEnMes; i++) {
         const dayDiv = document.createElement("div");
         dayDiv.classList.add("calendar-day");
@@ -446,29 +527,32 @@ function renderizarCalendario() {
         const mesStr = (calMes + 1).toString().padStart(2, '0');
         const diaStr = i.toString().padStart(2, '0');
         const fechaCompleta = `${calAnio}-${mesStr}-${diaStr}`;
-
         const faltaDelDia = todasLasFaltas.find(f => f.fecha === fechaCompleta);
+        const nombreFeriado = feriadosArgentina2026[fechaCompleta];
+
+        let mensajeTooltip = "";
 
         if (faltaDelDia) {
             dayDiv.classList.add("falta");
-            
-            if (faltaDelDia.motivo) {
-                dayDiv.style.cursor = "pointer";
+            mensajeTooltip = faltaDelDia.motivo || "Inasistencia";
+        } else if (nombreFeriado) {
+            dayDiv.classList.add("feriado");
+            mensajeTooltip = nombreFeriado;
+        }
+        if (mensajeTooltip !== "") {
+            dayDiv.style.cursor = "pointer";
 
-                const tooltip = document.createElement("span");
-                tooltip.classList.add("dia-tooltip");
-                tooltip.textContent = faltaDelDia.motivo;
-                dayDiv.appendChild(tooltip); 
-
-                dayDiv.addEventListener("click", (e) => {
-                    document.querySelectorAll('.calendar-day').forEach(d => {
-                        if (d !== dayDiv) d.classList.remove('show-tooltip');
-                    });
-
-                    dayDiv.classList.toggle("show-tooltip");
-                    e.stopPropagation(); 
+            const tooltip = document.createElement("span");
+            tooltip.classList.add("dia-tooltip");
+            tooltip.textContent = mensajeTooltip;
+            dayDiv.appendChild(tooltip);
+            dayDiv.addEventListener("click", (e) => {
+                document.querySelectorAll('.calendar-day').forEach(d => {
+                    if (d !== dayDiv) d.classList.remove('show-tooltip');
                 });
-            }
+                dayDiv.classList.toggle("show-tooltip");
+                e.stopPropagation();
+            });
         }
 
         calendarGrid.appendChild(dayDiv);

@@ -606,6 +606,29 @@ body.dark .faltas-list li:hover {
     transform: scale(1.05);
 }
 
+.calendar-day.feriado {
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9); /* Celeste */
+    color: white;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    font-weight: 800;
+}
+
+.item-feriado {
+    background: rgba(14, 165, 233, 0.05);
+    border-left: 3px solid #0ea5e9;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+.item-feriado .falta-motivo {
+    color: #0ea5e9;
+    font-weight: 600;
+}
+
+body.dark .calendar-day.feriado {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+
 body.dark .calendar-day.falta {
     background: linear-gradient(135deg, #ef4444, #9f1239);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
@@ -634,9 +657,6 @@ body.dark .calendar-day.falta {
     color: white;
 }
 
-/* ==========================================
-   MODAL / POPUP CALENDARIO
-   ========================================== */
 .modal {
     position: fixed;
     top: 0;
