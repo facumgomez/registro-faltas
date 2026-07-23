@@ -208,9 +208,10 @@ function asignarEventosBorrar() {
     if (btn.dataset.listener) return;
     btn.dataset.listener = "true";
     btn.addEventListener("click", async (e) => {
-      const docId = e.currentTarget
-        .closest(".btn-borrar")
-        .getAttribute("data-id");
+      const botonActual = e.currentTarget.closest(".btn-borrar");
+      const docId = botonActual.getAttribute("data-id");
+      const liElement = botonActual.closest("li"); 
+
       Swal.fire({
         title: "¿Borrar esta falta?",
         text: "No se puede deshacer.",
@@ -222,8 +223,16 @@ function asignarEventosBorrar() {
         cancelButtonText: "Cancelar",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          await deleteDoc(doc(db, "faltas", docId));
-          Toast.fire({ icon: "success", title: "Falta eliminada" });
+          if (liElement) liElement.classList.add("eliminando");
+          setTimeout(async () => {
+            try {
+              await deleteDoc(doc(db, "faltas", docId));
+              Toast.fire({ icon: "success", title: "Falta eliminada" });
+            } catch (error) {
+              if (liElement) liElement.classList.remove("eliminando");
+              Toast.fire({ icon: "error", title: "Error al eliminar" });
+            }
+          }, 800);
         }
       });
     });

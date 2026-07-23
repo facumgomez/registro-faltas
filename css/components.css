@@ -227,6 +227,13 @@ body:not(.dark) select option {
   animation: itemIn 0.5s ease-out forwards;
   opacity: 0;
   transform: translateY(20px);
+  transition: all 0.8s ease-in-out;
+}
+
+.faltas-list li.eliminando {
+  opacity: 0;
+  transform: translateX(300px) scale(0.8);
+  background-color: #ef4444 !important;
 }
 
 .faltas-list li:hover {
