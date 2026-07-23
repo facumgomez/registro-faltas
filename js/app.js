@@ -218,29 +218,48 @@ function asignarEventosBorrar() {
       const docId = botonActual.getAttribute("data-id");
       const liElement = botonActual.closest("li");
 
+      if (liElement) liElement.classList.add("eliminando");
+
+      let cancelado = false;
       Swal.fire({
-        title: "¿Borrar esta falta?",
-        text: "No se puede deshacer.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#ef4444",
-        cancelButtonColor: "#334155",
-        confirmButtonText: "Borrar",
-        cancelButtonText: "Cancelar",
+        title: "Falta eliminada",
+        text: "¿Te arrepentiste?",
+        icon: "info",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: true,
+        confirmButtonText: "Deshacer",
+        confirmButtonColor: "#8b5cf6",
+        timer: 4000,
+        timerProgressBar: true,
+        background: "var(--card-bg)",
+        color: "var(--text-main)",
+        customClass: { popup: "swal2-toast-custom" },
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
       }).then(async (result) => {
         if (result.isConfirmed) {
-          if (liElement) liElement.classList.add("eliminando");
-          setTimeout(async () => {
-            try {
-              await deleteDoc(doc(db, "faltas", docId));
-              Toast.fire({ icon: "success", title: "Falta eliminada" });
-            } catch (error) {
-              if (liElement) liElement.classList.remove("eliminando");
-              Toast.fire({ icon: "error", title: "Error al eliminar" });
-            }
-          }, 800);
+          cancelado = true;
+          if (liElement) liElement.classList.remove("eliminando");
+          Toast.fire({ icon: "success", title: "Acción cancelada" });
         }
       });
+
+      setTimeout(async () => {
+        if (!cancelado) {
+          try {
+            await deleteDoc(doc(db, "faltas", docId));
+          } catch (error) {
+            if (liElement) liElement.classList.remove("eliminando");
+            Toast.fire({
+              icon: "error",
+              title: "Error al eliminar en la nube",
+            });
+          }
+        }
+      }, 4000);
     });
   });
 }
