@@ -1,21 +1,8 @@
 import { db, faltasRef } from "./firebase-config.js";
-import {
-  feriadosArgentina2026,
-  esDiaLectivo,
-  calcularPresentismo,
-  esDiaValidoParaFaltar,
-} from "./feriados.js";
+import { feriadosArgentina2026, esDiaLectivo, calcularPresentismo, esDiaValidoParaFaltar, } from "./feriados.js";
 import { iniciarCalendario } from "./calendario.js";
 import { configurarExportacionPDF } from "./pdf-exporter.js";
-import {
-  addDoc,
-  onSnapshot,
-  deleteDoc,
-  doc,
-  query,
-  orderBy,
-  updateDoc,
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { addDoc, onSnapshot, deleteDoc, doc, query, orderBy, updateDoc, } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const Toast = Swal.mixin({
   toast: true,
@@ -48,7 +35,7 @@ if (fechaInput) {
 
 // Configurar exportación a PDF
 configurarExportacionPDF(
-  todasLasFaltas,
+  () => todasLasFaltas,
   feriadosArgentina2026,
   esDiaLectivo,
   filtroMes,

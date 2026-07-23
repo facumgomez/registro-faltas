@@ -1,5 +1,5 @@
 export function configurarExportacionPDF(
-  todasLasFaltas,
+  obtenerFaltas,
   feriadosArgentina2026,
   esDiaLectivo,
   filtroMes,
@@ -10,6 +10,8 @@ export function configurarExportacionPDF(
   if (!btnExportar) return;
 
   btnExportar.addEventListener("click", () => {
+    const todasLasFaltas = obtenerFaltas();
+
     if (todasLasFaltas.length === 0) {
       Toast.fire({ icon: "info", title: "No hay datos para exportar" });
       return;
@@ -123,7 +125,10 @@ export function configurarExportacionPDF(
       });
 
       if (datosParaPDF.length === 0) {
-        Toast.fire({ icon: "info", title: "El filtro actual está vacío" });
+        Toast.fire({
+          icon: "info",
+          title: "No hay datos para exportar en este período",
+        });
         if (loadingBar) loadingBar.classList.remove("active");
         return;
       }
@@ -171,7 +176,18 @@ export function configurarExportacionPDF(
         columnStyles: { 0: { cellWidth: 40 }, 1: { cellWidth: "auto" } },
       });
 
-      doc.save(`Reporte_Faltas_Cata_${new Date().getTime()}.pdf`);
+      let nombreArchivo = "Reporte_Asistencia_Completo";
+
+      if (mesSel !== "todos" || anioSel !== "todos") {
+        const nombreMesPDF =
+          mesSel !== "todos"
+            ? filtroMes.options[filtroMes.selectedIndex].text
+            : "Todos_los_meses";
+        const nombreAnioPDF = anioSel !== "todos" ? anioSel : "Todos_los_anios";
+        nombreArchivo = `Reporte_${nombreMesPDF}_${nombreAnioPDF}`;
+      }
+
+      doc.save(`${nombreArchivo}.pdf`);
       Toast.fire({ icon: "success", title: "PDF generado con éxito" });
 
       if (loadingBar) loadingBar.classList.remove("active");
