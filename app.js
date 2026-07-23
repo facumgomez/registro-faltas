@@ -94,6 +94,7 @@ function renderizarLista() {
     const hoyString = `${hoyObj.getFullYear()}-${(hoyObj.getMonth() + 1).toString().padStart(2, '0')}-${hoyObj.getDate().toString().padStart(2, '0')}`;
 
     let itemsParaMostrar = [...todasLasFaltas];
+    
     Object.keys(feriadosArgentina2026).forEach(fechaFeriado => {
         if (fechaFeriado <= hoyString && esDiaLectivo(fechaFeriado)) {
             itemsParaMostrar.push({
@@ -104,6 +105,28 @@ function renderizarLista() {
             });
         }
     });
+
+    const inicioVac = new Date(2026, 6, 20);
+    const finVac = new Date(2026, 6, 31);
+    let currVac = new Date(inicioVac);
+    while (currVac <= finVac) {
+        const y = currVac.getFullYear();
+        const m = String(currVac.getMonth() + 1).padStart(2, '0');
+        const d = String(currVac.getDate()).padStart(2, '0');
+        const fechaVacStr = `${y}-${m}-${d}`;
+        const diaSemana = currVac.getDay();
+        
+        if (diaSemana !== 0 && diaSemana !== 6 && fechaVacStr <= hoyString) {
+            itemsParaMostrar.push({
+                fecha: fechaVacStr,
+                motivo: "Vacaciones de invierno",
+                esFeriado: true,
+                id: `vacacion-${fechaVacStr}`
+            });
+        }
+        currVac.setDate(currVac.getDate() + 1);
+    }
+
     itemsParaMostrar.sort((a, b) => {
         return ordenDescendente ? b.fecha.localeCompare(a.fecha) : a.fecha.localeCompare(b.fecha);
     });
@@ -335,6 +358,26 @@ if (btnExportar) {
                     });
                 }
             });
+
+            const inicioVacPDF = new Date(2026, 6, 20);
+            const finVacPDF = new Date(2026, 6, 31);
+            let currVacPDF = new Date(inicioVacPDF);
+            while (currVacPDF <= finVacPDF) {
+                const y = currVacPDF.getFullYear();
+                const m = String(currVacPDF.getMonth() + 1).padStart(2, '0');
+                const d = String(currVacPDF.getDate()).padStart(2, '0');
+                const fechaVacStr = `${y}-${m}-${d}`;
+                const diaSemana = currVacPDF.getDay();
+                if (diaSemana !== 0 && diaSemana !== 6 && fechaVacStr <= hoyString) {
+                    itemsParaPDF.push({
+                        fecha: fechaVacStr,
+                        motivo: "Vacaciones de invierno",
+                        esFeriado: true
+                    });
+                }
+                currVacPDF.setDate(currVacPDF.getDate() + 1);
+            }
+
             itemsParaPDF.sort((a, b) => {
         return ordenDescendente ? b.fecha.localeCompare(a.fecha) : a.fecha.localeCompare(b.fecha);
     });
@@ -518,6 +561,17 @@ function renderizarCalendario() {
         calendarGrid.appendChild(emptyDiv);
     }
 
+    // Helper de vacaciones de invierno para el calendario
+    const esVacacionesDeInvierno = (fStr) => {
+        const [y, m, d] = fStr.split("-").map(Number);
+        if (y === 2026 && m === 7 && d >= 20 && d <= 31) {
+            const fecha = new Date(y, m - 1, d);
+            const diaSemana = fecha.getDay();
+            return diaSemana !== 0 && diaSemana !== 6;
+        }
+        return false;
+    };
+
     // Días reales del mes
     for (let i = 1; i <= diasEnMes; i++) {
         const dayDiv = document.createElement("div");
@@ -529,6 +583,7 @@ function renderizarCalendario() {
         const fechaCompleta = `${calAnio}-${mesStr}-${diaStr}`;
         const faltaDelDia = todasLasFaltas.find(f => f.fecha === fechaCompleta);
         const nombreFeriado = feriadosArgentina2026[fechaCompleta];
+        const esVacaciones = esVacacionesDeInvierno(fechaCompleta);
 
         let mensajeTooltip = "";
 
@@ -538,6 +593,9 @@ function renderizarCalendario() {
         } else if (nombreFeriado) {
             dayDiv.classList.add("feriado");
             mensajeTooltip = nombreFeriado;
+        } else if (esVacaciones) {
+            dayDiv.classList.add("feriado");
+            mensajeTooltip = "Vacaciones de invierno";
         }
         if (mensajeTooltip !== "") {
             dayDiv.style.cursor = "pointer";
@@ -566,7 +624,6 @@ const closeCalendar = document.getElementById("closeCalendar");
 if (btnVerCalendario && calendarModal) {
     btnVerCalendario.addEventListener("click", () => {
         calendarModal.classList.remove("hidden");
-        // Reiniciamos al mes actual al abrir por comodidad
         calMes = new Date().getMonth();
         calAnio = new Date().getFullYear();
         renderizarCalendario();
@@ -580,7 +637,6 @@ if (closeCalendar) {
 }
 
 window.addEventListener("click", (e) => {
-
     if (e.target === calendarModal) {
         calendarModal.classList.add("hidden");
     }
