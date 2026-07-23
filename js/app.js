@@ -43,6 +43,18 @@ configurarExportacionPDF(
   Toast,
 );
 
+const CACHE_KEY = "faltas_cache_local";
+const cacheLocal = localStorage.getItem(CACHE_KEY);
+if (cacheLocal) {
+  try {
+    todasLasFaltas = JSON.parse(cacheLocal);
+    fechasGuardadas = todasLasFaltas.map(f => f.fecha);
+    renderizarLista(); 
+  } catch (e) {
+    console.error("Error al leer la caché local:", e);
+  }
+}
+
 const q = query(faltasRef, orderBy("fecha", "desc"));
 onSnapshot(q, (snapshot) => {
   todasLasFaltas = [];
@@ -60,6 +72,8 @@ onSnapshot(q, (snapshot) => {
     fechasGuardadas.push(data.fecha);
   });
 
+  localStorage.setItem(CACHE_KEY, JSON.stringify(todasLasFaltas));
+  
   renderizarLista();
 });
 
