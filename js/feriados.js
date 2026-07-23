@@ -90,3 +90,15 @@ export function calcularPresentismo(mesFiltro, anioFiltro, todasLasFaltas) {
         );
   txtPresentismo.textContent = `${porcentaje}%`;
 }
+
+export function esDiaValidoParaFaltar(fechaString, feriadosArgentina2026) {
+  if (!esDiaLectivo(fechaString)) return false;
+  if (feriadosArgentina2026[fechaString]) return false;
+
+  const [y, m, d] = fechaString.split("-").map(Number);
+  if (y === 2026 && m === 7 && d >= 20 && d <= 31) {
+    return false; 
+  }
+
+  return true;
+}

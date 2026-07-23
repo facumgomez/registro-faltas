@@ -3,6 +3,7 @@ import {
   feriadosArgentina2026,
   esDiaLectivo,
   calcularPresentismo,
+  esDiaValidoParaFaltar,
 } from "./feriados.js";
 import { iniciarCalendario } from "./calendario.js";
 import { configurarExportacionPDF } from "./pdf-exporter.js";
@@ -303,11 +304,21 @@ if (btnAnotar) {
     const hoy = new Date().toLocaleDateString("en-CA", {
       timeZone: "America/Argentina/Buenos_Aires",
     });
+
     if (nuevaFecha > hoy) {
       Toast.fire({
         icon: "error",
         title: "Fecha no permitida",
         text: "No podés seleccionar una fecha superior a la de hoy",
+      });
+      return;
+    }
+    
+    if (!esDiaValidoParaFaltar(nuevaFecha, feriadosArgentina2026)) {
+      Toast.fire({
+        icon: "error",
+        title: "Día no laborable / lectivo",
+        text: "No se pueden registrar faltas en fines de semana, feriados o vacaciones.",
       });
       return;
     }
@@ -321,10 +332,14 @@ if (btnAnotar) {
     if (loadingBar) loadingBar.classList.add("active");
 
     try {
-      await addDoc(faltasRef, { fecha: nuevaFecha, motivo: nuevoMotivo });
+      await addDoc(faltasRef, {
+        fecha: nuevaFecha,
+        motivo: nuevoMotivo,
+      });
       Toast.fire({ icon: "success", title: "Anotado correctamente" });
       if (motivoInput) motivoInput.value = "";
     } catch (error) {
+      console.error(error);
       Toast.fire({ icon: "error", title: "Error de conexión" });
     } finally {
       if (loadingBar) loadingBar.classList.remove("active");
