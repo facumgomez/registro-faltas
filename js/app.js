@@ -313,7 +313,7 @@ if (btnAnotar) {
       });
       return;
     }
-    
+
     if (!esDiaValidoParaFaltar(nuevaFecha, feriadosArgentina2026)) {
       Toast.fire({
         icon: "error",
@@ -339,8 +339,12 @@ if (btnAnotar) {
       Toast.fire({ icon: "success", title: "Anotado correctamente" });
       if (motivoInput) motivoInput.value = "";
     } catch (error) {
-      console.error(error);
-      Toast.fire({ icon: "error", title: "Error de conexión" });
+      console.error("Error al conectar con Firestore:", error);
+      Toast.fire({
+        icon: "error",
+        title: "Error de red",
+        text: "No se pudo guardar la falta. Verificá tu conexión a internet.",
+      });
     } finally {
       if (loadingBar) loadingBar.classList.remove("active");
     }
