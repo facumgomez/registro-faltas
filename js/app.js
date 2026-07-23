@@ -54,6 +54,8 @@ onSnapshot(q, (snapshot) => {
       id: docSnap.id,
       fecha: data.fecha,
       motivo: data.motivo || "",
+      editado: data.editado || false,
+      fechaEdicion: data.fechaEdicion || "",
     });
     fechasGuardadas.push(data.fecha);
   });
@@ -153,10 +155,14 @@ function renderizarLista() {
       const li = document.createElement("li");
       li.classList.add(item.esFeriado ? "item-feriado" : "item-falta");
 
+      const badgeEditado = item.editado
+        ? `<span class="badge-editado" title="Modificado el ${item.fechaEdicion}"><i class="fa-solid fa-pencil"></i> Editado</span>`
+        : "";
+
       li.innerHTML = `
                 <div class="falta-info">
                     <span><i class="fa-solid ${item.esFeriado ? "fa-calendar-check" : "fa-calendar-day"}"></i> ${day}/${month}/${year}</span>
-                    <span class="falta-motivo">${item.motivo}</span>
+                    <span class="falta-motivo">${item.motivo} ${badgeEditado}</span>
                 </div>
                 ${
                   !item.esFeriado
@@ -210,7 +216,7 @@ function asignarEventosBorrar() {
     btn.addEventListener("click", async (e) => {
       const botonActual = e.currentTarget.closest(".btn-borrar");
       const docId = botonActual.getAttribute("data-id");
-      const liElement = botonActual.closest("li"); 
+      const liElement = botonActual.closest("li");
 
       Swal.fire({
         title: "¿Borrar esta falta?",
@@ -262,8 +268,21 @@ function asignarEventosEditar() {
         if (result.isConfirmed) {
           try {
             const nuevoMotivo = result.value.trim();
-            await updateDoc(doc(db, "faltas", docId), { motivo: nuevoMotivo });
-            Toast.fire({ icon: "success", title: "Motivo actualizado" });
+            const fechaHoraActual = new Date().toLocaleString("es-AR", {
+              timeZone: "America/Argentina/Buenos_Aires",
+              dateStyle: "short",
+              timeStyle: "short",
+            });
+            await updateDoc(doc(db, "faltas", docId), {
+              motivo: nuevoMotivo,
+              editado: true,
+              fechaEdicion: fechaHoraActual,
+            });
+
+            Toast.fire({
+              icon: "success",
+              title: "Motivo actualizado y registrado",
+            });
           } catch (error) {
             Toast.fire({ icon: "error", title: "Error al actualizar" });
           }
@@ -271,6 +290,7 @@ function asignarEventosEditar() {
       });
     });
   });
+
   if (filtroMes && !filtroMes.dataset.listener) {
     filtroMes.dataset.listener = "true";
     filtroMes.addEventListener("change", renderizarLista);
