@@ -1,0 +1,126 @@
+.calendar-container {
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-header h4 {
+  font-size: 1.2rem;
+  color: var(--text-main);
+  text-transform: capitalize;
+  font-weight: 700;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.day-name {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-sub);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 50%;
+  color: var(--text-main);
+  transition: 0.3s ease;
+  position: relative;
+}
+
+.calendar-day.empty {
+  background: transparent;
+}
+
+.calendar-day.falta {
+  background: linear-gradient(135deg, var(--danger), #fb7185);
+  color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  font-weight: 800;
+  transform: scale(1.05);
+}
+
+.calendar-day.feriado {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: white;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  font-weight: 800;
+}
+
+body.dark .calendar-day.feriado {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+}
+
+body.dark .calendar-day.falta {
+  background: linear-gradient(135deg, #ef4444, #9f1239);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.item-feriado {
+  background: rgba(14, 165, 233, 0.05);
+  border-left: 3px solid #0ea5e9;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.item-feriado .falta-motivo {
+  color: #0ea5e9;
+  font-weight: 600;
+}
+
+.dia-tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-main);
+  color: var(--card-bg);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.dia-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--text-main) transparent transparent transparent;
+}
+
+.calendar-day:hover .dia-tooltip,
+.calendar-day.show-tooltip .dia-tooltip {
+  opacity: 1;
+  visibility: visible;
+  bottom: 125%;
+}

@@ -1,0 +1,25 @@
+:root {
+  --bg-main: #f8fafc;
+  --text-main: #1e293b;
+  --text-sub: #64748b;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(203, 213, 225, 0.5);
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --accent2: #22d3ee;
+  --input-bg: #ffffff;
+  --danger: #ef4444;
+  --success: #10b981;
+  --glass-blur: blur(12px) saturate(180%);
+  --font-family: 'Urbanist', sans-serif;
+}
+
+body.dark {
+  --bg-main: #0f172a;
+  --text-main: #f8fafc;
+  --text-sub: #94a3b8;
+  --card-bg: rgba(30, 41, 59, 0.7);
+  --card-border: rgba(51, 65, 85, 0.5);
+  --input-bg: #1e293b;
+  --danger: #f87171;
+}
