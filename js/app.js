@@ -423,21 +423,28 @@ const themeToggle = document.getElementById("themeToggle");
 const themeIcon = document.getElementById("themeIcon");
 const moonIcon = `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`;
 const sunIcon = `<circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="5"></line><line x1="12" y1="19" x2="12" y2="22"></line><line x1="2" y1="12" x2="5" y2="12"></line><line x1="19" y1="12" x2="22" y2="12"></line><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"></line><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"></line>`;
+const savedTheme = localStorage.getItem("theme");
+const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-if (localStorage.getItem("theme") === "dark") {
+if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
   document.body.classList.add("dark");
-  themeIcon.innerHTML = sunIcon;
+  if (themeIcon) themeIcon.innerHTML = sunIcon;
 } else {
-  themeIcon.innerHTML = moonIcon;
+  document.body.classList.remove("dark");
+  if (themeIcon) themeIcon.innerHTML = moonIcon;
 }
 
-themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  const darkMode = document.body.classList.contains("dark");
-  themeIcon.style.transform = "rotate(180deg)";
-  setTimeout(() => {
-    themeIcon.innerHTML = darkMode ? sunIcon : moonIcon;
-    themeIcon.style.transform = "rotate(0deg)";
-  }, 150);
-  localStorage.setItem("theme", darkMode ? "dark" : "light");
-});
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const darkMode = document.body.classList.contains("dark");
+    if (themeIcon) {
+      themeIcon.style.transform = "rotate(180deg)";
+      setTimeout(() => {
+        themeIcon.innerHTML = darkMode ? sunIcon : moonIcon;
+        themeIcon.style.transform = "rotate(0deg)";
+      }, 150);
+    }
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
+  });
+}
