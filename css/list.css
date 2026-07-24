@@ -1,0 +1,121 @@
+.faltas-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faltas-list li {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  animation: itemIn 0.5s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease-in-out;
+}
+
+.faltas-list li.eliminando {
+  opacity: 0;
+  transform: translateX(300px) scale(0.8);
+  background-color: #ef4444 !important;
+}
+
+.faltas-list li:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: scale(1.01);
+}
+
+body.dark .faltas-list li:hover {
+  background: rgba(30, 41, 59, 0.85);
+}
+
+@keyframes itemIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.falta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.falta-info span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.falta-info span i {
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.falta-motivo {
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  font-weight: 500;
+  padding-left: 24px;
+}
+
+.badge-editado {
+  font-size: 0.7rem;
+  background-color: rgba(139, 92, 246, 0.15);
+  color: var(--primary, #8b5cf6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.item-feriado {
+  background: rgba(14, 165, 233, 0.05);
+  border-left: 3px solid #0ea5e9;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.item-feriado .falta-motivo {
+  color: #0ea5e9;
+  font-weight: 600;
+}
+
+.month-separator {
+  display: flex;
+  align-items: center;
+  margin: 18px 0 8px 0;
+  list-style: none;
+}
+
+.month-separator span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.month-separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--text-sub);
+  opacity: 0.1;
+  margin-left: 10px;
+}
