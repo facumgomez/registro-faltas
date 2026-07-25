@@ -15,11 +15,11 @@
 }
 
 body.dark {
-  --bg-main: #0f172a;
+  --bg-main: #050505;
   --text-main: #f8fafc;
   --text-sub: #94a3b8;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --card-border: rgba(51, 65, 85, 0.5);
-  --input-bg: #1e293b;
+  --card-bg: rgba(18, 18, 18, 0.8); 
+  --card-border: rgba(255, 255, 255, 0.08); 
+  --input-bg: #121212;
   --danger: #f87171;
 }

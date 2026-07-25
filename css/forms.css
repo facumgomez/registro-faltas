@@ -90,6 +90,13 @@ body:not(.dark) select option {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .stat-label {
@@ -97,7 +104,7 @@ body:not(.dark) select option {
   font-weight: 600;
   color: var(--text-sub);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .stat-number {
@@ -185,4 +192,31 @@ header,
 input, 
 select {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (max-width: 400px) {
+  .stats {
+    gap: 6px;
+    padding: 12px;
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .filters-group select,
+  .filters-group .control-mini {
+    width: 100% !important;
+  }
 }

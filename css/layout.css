@@ -10,13 +10,20 @@
 
 header {
   margin-bottom: 30px;
-  text-align: center;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px; 
+  align-items: center;
+  width: 100%;
 }
 
 h1 {
+  grid-column: 2; 
   font-weight: 800;
   font-size: 2.2rem;
   letter-spacing: -1px;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
 }
 
 h1 span {
@@ -25,6 +32,13 @@ h1 span {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+#themeToggle {
+  grid-column: 3; 
+  justify-self: end;
+  position: static !important;
+  margin: 0;
 }
 
 h3 {
@@ -79,14 +93,12 @@ h3 i {
   }
 
   h1 {
-    font-size: 1.9rem;
+    font-size: 1.25rem; 
   }
 
   #themeToggle {
-    top: 15px;
-    right: 15px;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
 }
 

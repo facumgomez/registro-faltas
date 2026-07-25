@@ -1,0 +1,21 @@
+{
+  "name": "asistenciacata",
+  "version": "1.0.0",
+  "description": "Aplicación web profesional diseñada para la gestión de asistencias en acompañamiento terapéutico. Desarrollada para ofrecer un flujo de trabajo rápido, intuitivo y visualmente agradable.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/facumgomez/registro-faltas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/facumgomez/registro-faltas/issues"
+  },
+  "homepage": "https://github.com/facumgomez/registro-faltas#readme"
+}
