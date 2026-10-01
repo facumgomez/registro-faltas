@@ -13,6 +13,8 @@ export const feriadosArgentina2026 = {
   "2026-07-10": "Día no laborable con fines turísticos.",
   "2026-08-17": "Paso a la Inmortalidad del Gral. José de San Martín",
   "2026-10-12": "Día de la Diversidad Cultural",
+  "2026-11-09": "Visita de Su Santidad el Papa León XIV",
+  "2026-11-09": "Visita de Su Santidad el Papa León XIV PBA",
   "2026-11-23": "Día de la Soberanía",
   "2026-12-07": "Día no laborable con fines turísticos.",
   "2026-12-08": "Inmaculada Concepción de María",
