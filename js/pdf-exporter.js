@@ -139,7 +139,7 @@ export function configurarExportacionPDF(
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
       doc.setTextColor(17, 24, 39);
-      doc.text("Reporte de Asistencia - Cata", 14, 22);
+      doc.text("Reporte de Inasistencia - Cata", 14, 22);
 
       doc.setFontSize(11);
       doc.setFont("helvetica", "normal");
@@ -176,7 +176,7 @@ export function configurarExportacionPDF(
         columnStyles: { 0: { cellWidth: 40 }, 1: { cellWidth: "auto" } },
       });
 
-      let nombreArchivo = "Reporte_Asistencia_Completo";
+      let nombreArchivo = "Reporte_Inasistencia_Completo";
 
       if (mesSel !== "todos" || anioSel !== "todos") {
         const nombreMesPDF =
